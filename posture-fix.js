@@ -1,227 +1,151 @@
-function forgeFitMovementPattern(move) {
-  const name = move.name.toLowerCase();
-  if (/push|press|fly|chest/.test(name) && !/overhead|shoulder|leg|pallof/.test(name)) return "Push-up / Chest Press";
-  if (/row|pulldown|pull-up|pull.apart|face pull|swimmer|snow angel|superman/.test(name)) return "Row / Back Pull";
-  if (/squat|leg press|wall sit/.test(name)) return "Squat";
-  if (/lunge|split|step-up/.test(name)) return "Lunge / Step-up";
-  if (/deadlift|good morning|glute bridge|hip/.test(name)) return "Hip Hinge / Glutes";
-  if (/shoulder|overhead|arnold|lateral|front raise|pike|handstand|y raise/.test(name)) return "Overhead / Shoulder";
-  if (/curl|triceps|dip|kickback|extension/.test(name)) return "Arms";
-  if (/plank|dead bug|crunch|twist|sit-up|hollow|pallof|wood chop|carry/.test(name)) return "Core Brace";
-  if (/stretch|mobility|rotation|90\/90|cat cow|opener|floss|hold/.test(name)) return "Mobility";
-  if (/knee|climber|skater|thrust|bike|row erg|treadmill|sled|stair|shuffle|march|swing/.test(name)) return "Cardio";
-  return move.part;
+const EXERCISE_IMAGE_BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+const EXERCISE_DATA_SOURCE = "https://github.com/yuhonas/free-exercise-db";
+
+function forgeFitSlug(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
-function forgeFitPoseSvg(move, accent) {
-  const pattern = forgeFitMovementPattern(move);
-  const markerId = `pose-arrow-${pattern.replace(/[^a-z0-9]/gi, "")}`;
-  const arrow = `url(#${markerId})`;
-  const commonDefs = `
-    <defs>
-      <marker id="${markerId}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="${accent}"></path>
-      </marker>
-    </defs>
-  `;
-  const poses = {
-    "Push-up / Chest Press": `
-      <text x="24" y="28" class="pose-title">Push-up / chest press</text>
-      <line x1="46" y1="142" x2="218" y2="112" class="guide-line"></line>
-      <circle cx="218" cy="106" r="14" class="body-dark"></circle>
-      <path d="M204 112 L148 122 L88 132" class="body-line thick"></path>
-      <path d="M158 121 L132 158" class="body-line"></path>
-      <path d="M146 123 L126 86" class="body-line"></path>
-      <path d="M89 132 L58 162" class="body-line"></path>
-      <path d="M86 132 L48 104" class="body-line"></path>
-      <ellipse cx="156" cy="122" rx="24" ry="15" fill="${accent}" opacity="0.92"></ellipse>
-      <path d="M152 88 C136 98 132 112 134 130" class="action-arrow" marker-end="${arrow}"></path>
-      <text x="30" y="194" class="pose-note">Head, hips, heels stay in one line</text>
-    `,
-    "Row / Back Pull": `
-      <text x="24" y="28" class="pose-title">Row / back pull</text>
-      <circle cx="74" cy="70" r="14" class="body-dark"></circle>
-      <path d="M88 80 L134 104 L176 126" class="body-line thick"></path>
-      <path d="M124 100 L100 148" class="body-line"></path>
-      <path d="M142 108 L126 158" class="body-line"></path>
-      <path d="M126 100 L174 76" class="body-line"></path>
-      <path d="M136 108 L190 94" class="body-line"></path>
-      <path d="M106 82 C124 74 150 80 170 98" fill="${accent}" opacity="0.9"></path>
-      <path d="M205 96 C184 96 170 94 150 86" class="action-arrow" marker-end="${arrow}"></path>
-      <text x="28" y="194" class="pose-note">Pull elbows back, keep chest proud</text>
-    `,
-    Squat: `
-      <text x="24" y="28" class="pose-title">Squat posture</text>
-      <circle cx="128" cy="54" r="14" class="body-dark"></circle>
-      <path d="M128 70 L134 112" class="body-line thick"></path>
-      <path d="M134 112 L98 150 L56 150" class="body-line"></path>
-      <path d="M134 112 L174 150 L216 150" class="body-line"></path>
-      <path d="M118 84 L82 106" class="body-line"></path>
-      <path d="M138 84 L174 106" class="body-line"></path>
-      <path d="M96 142 L56 150" stroke="${accent}" stroke-width="18" stroke-linecap="round"></path>
-      <path d="M172 142 L216 150" stroke="${accent}" stroke-width="18" stroke-linecap="round"></path>
-      <line x1="98" y1="40" x2="98" y2="160" class="guide-line"></line>
-      <path d="M62 118 C82 138 104 148 130 150" class="action-arrow" marker-end="${arrow}"></path>
-      <text x="32" y="194" class="pose-note">Knees track toes, heels stay down</text>
-    `,
-    "Lunge / Step-up": `
-      <text x="24" y="28" class="pose-title">Lunge / step-up</text>
-      <circle cx="118" cy="52" r="14" class="body-dark"></circle>
-      <path d="M118 68 L128 116" class="body-line thick"></path>
-      <path d="M128 116 L92 152 L52 152" class="body-line"></path>
-      <path d="M128 116 L170 154 L220 154" class="body-line"></path>
-      <path d="M112 82 L78 106" class="body-line"></path>
-      <path d="M132 84 L166 106" class="body-line"></path>
-      <circle cx="94" cy="150" r="14" fill="${accent}" opacity="0.9"></circle>
-      <circle cx="170" cy="154" r="14" fill="${accent}" opacity="0.9"></circle>
-      <line x1="92" y1="84" x2="92" y2="164" class="guide-line"></line>
-      <text x="32" y="194" class="pose-note">Front knee stays over toes, torso tall</text>
-    `,
-    "Hip Hinge / Glutes": `
-      <text x="24" y="28" class="pose-title">Hip hinge / glutes</text>
-      <circle cx="74" cy="78" r="14" class="body-dark"></circle>
-      <path d="M88 86 L140 112 L204 116" class="body-line thick"></path>
-      <path d="M138 112 L112 158" class="body-line"></path>
-      <path d="M158 114 L184 160" class="body-line"></path>
-      <path d="M124 104 L152 88" class="body-line"></path>
-      <ellipse cx="152" cy="112" rx="28" ry="18" fill="${accent}" opacity="0.9"></ellipse>
-      <path d="M174 92 C152 100 138 116 128 140" class="action-arrow" marker-end="${arrow}"></path>
-      <text x="30" y="194" class="pose-note">Hips move back, back stays flat</text>
-    `,
-    "Overhead / Shoulder": `
-      <text x="24" y="28" class="pose-title">Overhead / shoulder</text>
-      <circle cx="132" cy="58" r="14" class="body-dark"></circle>
-      <path d="M132 74 L132 132" class="body-line thick"></path>
-      <path d="M132 88 L92 46" class="body-line"></path>
-      <path d="M132 88 L172 46" class="body-line"></path>
-      <path d="M132 132 L104 176" class="body-line"></path>
-      <path d="M132 132 L160 176" class="body-line"></path>
-      <circle cx="108" cy="70" r="16" fill="${accent}" opacity="0.95"></circle>
-      <circle cx="156" cy="70" r="16" fill="${accent}" opacity="0.95"></circle>
-      <path d="M92 92 C94 70 96 58 104 42" class="action-arrow" marker-end="${arrow}"></path>
-      <path d="M172 92 C170 70 168 58 160 42" class="action-arrow" marker-end="${arrow}"></path>
-      <text x="36" y="194" class="pose-note">Ribs down, press straight overhead</text>
-    `,
-    Arms: `
-      <text x="24" y="28" class="pose-title">Arm isolation</text>
-      <circle cx="132" cy="54" r="14" class="body-dark"></circle>
-      <path d="M132 70 L132 134" class="body-line thick"></path>
-      <path d="M126 84 L92 118 L96 150" class="body-line"></path>
-      <path d="M138 84 L172 118 L168 150" class="body-line"></path>
-      <path d="M92 118 L96 150" stroke="${accent}" stroke-width="16" stroke-linecap="round"></path>
-      <path d="M172 118 L168 150" stroke="${accent}" stroke-width="16" stroke-linecap="round"></path>
-      <path d="M80 154 C76 132 84 114 102 102" class="action-arrow" marker-end="${arrow}"></path>
-      <text x="38" y="194" class="pose-note">Elbows stay fixed, move slowly</text>
-    `,
-    "Core Brace": `
-      <text x="24" y="28" class="pose-title">Core brace / plank</text>
-      <line x1="52" y1="122" x2="218" y2="96" class="guide-line"></line>
-      <circle cx="218" cy="90" r="13" class="body-dark"></circle>
-      <path d="M206 96 L146 108 L84 120" class="body-line thick"></path>
-      <path d="M150 108 L126 146" class="body-line"></path>
-      <path d="M86 120 L50 150" class="body-line"></path>
-      <rect x="126" y="98" width="46" height="24" rx="10" fill="${accent}" opacity="0.95" transform="rotate(-10 149 110)"></rect>
-      <path d="M134 78 C126 96 126 116 134 136" class="action-arrow" marker-end="${arrow}"></path>
-      <text x="28" y="194" class="pose-note">Brace abs, keep hips level</text>
-    `,
-    Cardio: `
-      <text x="24" y="28" class="pose-title">Cardio stance</text>
-      <circle cx="112" cy="48" r="13" class="body-dark"></circle>
-      <path d="M112 64 L130 112" class="body-line thick"></path>
-      <path d="M124 78 L82 94" class="body-line"></path>
-      <path d="M128 80 L174 58" class="body-line"></path>
-      <path d="M130 112 L92 160" class="body-line"></path>
-      <path d="M132 112 L184 150" class="body-line"></path>
-      <path d="M66 170 C104 188 158 188 206 164" class="action-arrow" marker-end="${arrow}"></path>
-      <circle cx="132" cy="112" r="22" fill="${accent}" opacity="0.8"></circle>
-      <text x="32" y="194" class="pose-note">Soft knees, quick feet, steady breathing</text>
-    `,
-    Mobility: `
-      <text x="24" y="28" class="pose-title">Mobility stretch</text>
-      <circle cx="92" cy="62" r="13" class="body-dark"></circle>
-      <path d="M102 72 C128 92 150 116 174 146" class="body-line thick"></path>
-      <path d="M126 96 L82 146 L48 146" class="body-line"></path>
-      <path d="M148 120 L198 150 L230 150" class="body-line"></path>
-      <path d="M112 84 L72 104" class="body-line"></path>
-      <path d="M134 102 L178 78" class="body-line"></path>
-      <path d="M76 132 C104 104 140 92 178 78" class="action-arrow" marker-end="${arrow}"></path>
-      <ellipse cx="148" cy="118" rx="38" ry="18" fill="${accent}" opacity="0.55"></ellipse>
-      <text x="34" y="194" class="pose-note">Move slow, breathe, stop before pain</text>
-    `
+function forgeFitImage(path, label, frame = 0) {
+  return {
+    src: `${EXERCISE_IMAGE_BASE}${path}/${frame}.jpg`,
+    credit: label,
+    url: EXERCISE_DATA_SOURCE
   };
+}
 
-  return `
-    <svg class="pose-svg" viewBox="0 0 264 220" role="img" aria-label="${pattern} posture picture">
-      ${commonDefs}
-      <rect x="0" y="0" width="264" height="220" rx="14" fill="#f8faf8"></rect>
-      <rect x="18" y="168" width="228" height="12" rx="6" fill="#d8e2dd"></rect>
-      ${poses[pattern] || poses["Core Brace"]}
-    </svg>
-  `;
+const forgeFitExerciseImages = [
+  [/incline push/i, "Incline_Push-Up", "Incline push-up", 0],
+  [/wide push/i, "Incline_Push-Up_Wide", "Wide push-up", 1],
+  [/decline push/i, "Decline_Push-Up", "Decline push-up", 0],
+  [/close-grip push|diamond push/i, "Incline_Push-Up_Close-Grip", "Close-grip push-up", 1],
+  [/push-up hold|tempo push|push-ups$|push up/i, "Push_Up_to_Side_Plank", "Push-up body line", 0],
+  [/dumbbell floor press|close-grip floor press/i, "Dumbbell_Floor_Press", "Dumbbell floor press", 0],
+  [/squeeze press|chest press machine/i, "Leverage_Chest_Press", "Chest press", 1],
+  [/incline dumbbell press/i, "Incline_Dumbbell_Press", "Incline dumbbell press", 0],
+  [/dumbbell fly/i, "Dumbbell_Flyes", "Dumbbell fly", 1],
+  [/cable fly|band fly/i, "Flat_Bench_Cable_Flyes", "Cable fly", 0],
+  [/bench press/i, "Barbell_Bench_Press_-_Medium_Grip", "Bench press", 0],
+  [/band chest press|single-arm band press|close-grip band press/i, "Bench_Press_-_With_Bands", "Band chest press", 1],
+
+  [/table row|towel row|band row/i, "Inverted_Row", "Inverted row", 0],
+  [/one-arm row|single-arm band row/i, "One-Arm_Dumbbell_Row", "One-arm row", 0],
+  [/chest-supported row|seated row|cable row/i, "Seated_Cable_Rows", "Seated row", 1],
+  [/dumbbell pullover|pullover breathing/i, "Straight-Arm_Dumbbell_Pullover", "Dumbbell pullover", 0],
+  [/rear delt row|rear delt fly|rear delt raises/i, "Dumbbell_Lying_Rear_Lateral_Raise", "Rear delt raise", 1],
+  [/renegade row|band plank row/i, "Alternating_Renegade_Row", "Renegade row", 0],
+  [/lat pulldown|band lat pulldown/i, "Wide-Grip_Lat_Pulldown", "Lat pulldown", 0],
+  [/assisted pull|pull-apart|face pull|band rear delt pull/i, "Band_Pull_Apart", "Upper-back pull", 1],
+  [/prone swimmer|reverse snow angel|superman/i, "Superman", "Superman back extension", 0],
+
+  [/box squat/i, "Box_Squat", "Box squat", 0],
+  [/goblet squat/i, "Goblet_Squat", "Goblet squat", 0],
+  [/band squat|bodyweight squat|deep squat|squat to press/i, "Bodyweight_Squat", "Bodyweight squat", 1],
+  [/leg press/i, "Leg_Press", "Leg press", 0],
+  [/romanian deadlift|trap-bar deadlift/i, "Romanian_Deadlift", "Romanian deadlift", 0],
+  [/good morning/i, "Good_Morning", "Good morning hinge", 1],
+  [/walking lunge|dumbbell lunges|reverse lunges|reverse lunge/i, "Dumbbell_Lunges", "Lunge", 0],
+  [/split squat|band split squat/i, "Split_Squats", "Split squat", 0],
+  [/step-up|fast step-ups|dumbbell step-up/i, "Step-up_with_Knee_Raise", "Step-up", 1],
+  [/glute bridge|band glute bridge/i, "Single_Leg_Glute_Bridge", "Glute bridge", 0],
+  [/leg curl/i, "Lying_Leg_Curls", "Leg curl", 1],
+  [/calf raise|calf stretch/i, "Rocking_Standing_Calf_Raise", "Calf raise", 0],
+  [/wall sit/i, "Bodyweight_Squat", "Wall-sit leg position", 0],
+  [/lateral band walks/i, "Band_Hip_Adductions", "Band hip walk", 1],
+
+  [/wall handstand|handstand/i, "Handstand_Push-Ups", "Handstand hold", 0],
+  [/pike push/i, "Handstand_Push-Ups", "Pike push-up pattern", 1],
+  [/plank shoulder taps/i, "Push_Up_to_Side_Plank", "Shoulder tap plank", 1],
+  [/half-kneeling press|dumbbell press/i, "Dumbbell_One-Arm_Shoulder_Press", "Dumbbell shoulder press", 0],
+  [/arnold press/i, "Arnold_Dumbbell_Press", "Arnold press", 1],
+  [/machine shoulder press|shoulder press|band overhead press/i, "Shoulder_Press_-_With_Bands", "Shoulder press", 0],
+  [/lateral raise|band lateral raise|cable lateral raises/i, "Lateral_Raise_-_With_Bands", "Lateral raise", 1],
+  [/front raise|band front raise/i, "Alternating_Deltoid_Raise", "Front raise", 0],
+  [/upright row/i, "Upright_Cable_Row", "Upright row", 1],
+  [/arm circles/i, "Arm_Circles", "Arm circles", 0],
+  [/bear crawl/i, "Bear_Crawl_Sled_Drags", "Bear crawl hold", 0],
+  [/band y raise/i, "Back_Flyes_-_With_Bands", "Band Y raise", 1],
+
+  [/hammer curls|hammer band curls/i, "Hammer_Curls", "Hammer curl", 0],
+  [/zottman/i, "Zottman_Preacher_Curl", "Zottman curl", 1],
+  [/towel curls|band curls|cable curls|isometric curl|reverse curls/i, "Standing_Biceps_Cable_Curl", "Curl posture", 0],
+  [/preacher curls/i, "Preacher_Curl", "Preacher curl", 1],
+  [/overhead triceps extension|overhead band extension/i, "Dumbbell_One-Arm_Triceps_Extension", "Overhead triceps extension", 0],
+  [/rope pressdown|band triceps pressdown/i, "Triceps_Pushdown_-_Rope_Attachment", "Rope pressdown", 1],
+  [/kickbacks/i, "Tricep_Dumbbell_Kickback", "Triceps kickback", 0],
+  [/bench dips|triceps dips/i, "Bench_Dips", "Bench dip", 0],
+
+  [/dead bugs|weighted dead bugs|band dead bugs/i, "Dead_Bug", "Dead bug", 0],
+  [/side plank/i, "Push_Up_to_Side_Plank", "Side plank", 1],
+  [/hollow hold/i, "Jackknife_Sit-Up", "Hollow-body brace", 0],
+  [/reverse crunch/i, "Cable_Reverse_Crunch", "Reverse crunch", 1],
+  [/plank reaches|weighted plank/i, "Plank", "Plank", 0],
+  [/suitcase carry|farmer carry|farmer/i, "Farmers_Walk", "Loaded carry", 0],
+  [/russian twist/i, "Russian_Twist", "Russian twist", 0],
+  [/plank pull-through/i, "Alternating_Renegade_Row", "Plank pull-through", 1],
+  [/weighted sit-ups|sit-ups/i, "Sit-Up", "Sit-up", 0],
+  [/cable crunch/i, "Cable_Crunch", "Cable crunch", 0],
+  [/hanging knee/i, "Hanging_Leg_Raise", "Hanging knee raise", 1],
+  [/pallof|anti-rotation/i, "Pallof_Press", "Pallof press", 0],
+  [/wood chop/i, "Standing_Cable_Wood_Chop", "Wood chop", 1],
+  [/back extension/i, "Hyperextensions_Back_Extensions", "Back extension", 0],
+
+  [/high knees|march/i, "Walking_Treadmill", "Marching mechanics", 0],
+  [/mountain climbers/i, "Mountain_Climbers", "Mountain climbers", 0],
+  [/skater/i, "Alternate_Leg_Diagonal_Bound", "Skater bound", 1],
+  [/squat thrust/i, "Mountain_Climbers", "Squat thrust", 1],
+  [/dumbbell swings/i, "One-Arm_Kettlebell_Swings", "Swing hinge", 0],
+  [/low-impact thruster|band thrusters|thruster/i, "Kettlebell_Thruster", "Thruster", 1],
+  [/lateral shuffle/i, "Alternate_Leg_Diagonal_Bound", "Lateral shuffle", 0],
+  [/incline treadmill/i, "Walking_Treadmill", "Incline treadmill", 1],
+  [/row erg/i, "Rowing_Stationary", "Row erg", 0],
+  [/bike intervals/i, "Recumbent_Bike", "Bike intervals", 1],
+  [/sled push/i, "Sled_Push", "Sled push", 0],
+  [/stair climber/i, "Stairmaster", "Stair climber", 1],
+  [/fast band rows/i, "Band_Pull_Apart", "Fast band row", 0],
+
+  [/world's greatest stretch/i, "Worlds_Greatest_Stretch", "World's greatest stretch", 0],
+  [/hip flexor|couch stretch/i, "Kneeling_Hip_Flexor", "Hip flexor stretch", 0],
+  [/thoracic|open-book/i, "Chair_Upper_Body_Stretch", "Thoracic rotation", 0],
+  [/90\/90/i, "90_90_Hamstring", "90/90 mobility", 0],
+  [/band shoulder opener/i, "Band_Pull_Apart", "Band shoulder opener", 1],
+  [/ankle rocks/i, "Ankle_Circles", "Ankle mobility", 0],
+  [/hamstring floss/i, "Hamstring_Stretch", "Hamstring stretch", 1],
+  [/lat stretch/i, "Standing_Lateral_Stretch", "Lat stretch", 0],
+  [/cat cow/i, "Cat_Stretch", "Cat cow mobility", 0]
+];
+
+const forgeFitFallbackImages = {
+  Chest: ["Incline_Push-Up", "Dumbbell_Floor_Press", "Barbell_Bench_Press_-_Medium_Grip"],
+  Back: ["Inverted_Row", "Wide-Grip_Lat_Pulldown", "Superman"],
+  Legs: ["Bodyweight_Squat", "Dumbbell_Lunges", "Romanian_Deadlift"],
+  Shoulders: ["Dumbbell_Shoulder_Press", "Lateral_Raise_-_With_Bands", "Arm_Circles"],
+  Arms: ["Hammer_Curls", "Bench_Dips", "Triceps_Pushdown_-_Rope_Attachment"],
+  Core: ["Dead_Bug", "Plank", "Russian_Twist"],
+  Conditioning: ["Mountain_Climbers", "Rowing_Stationary", "Stairmaster"],
+  Mobility: ["Kneeling_Hip_Flexor", "Hamstring_Stretch", "Ankle_Circles"]
+};
+
+function forgeFitExerciseMedia(move) {
+  const match = forgeFitExerciseImages.find(([pattern]) => pattern.test(move.name));
+  if (match) return forgeFitImage(match[1], match[2], match[3]);
+
+  const fallbacks = forgeFitFallbackImages[move.part] || forgeFitFallbackImages.Core;
+  const index = forgeFitSlug(move.name).length % fallbacks.length;
+  return forgeFitImage(fallbacks[index], `${move.name} posture reference`, index % 2);
 }
 
 function forgeFitPostureMedia(move) {
-  const pattern = forgeFitMovementPattern(move);
-  const media = {
-    "Push-up / Chest Press": {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Push-up.jpg?width=900",
-      credit: "Push-up.jpg",
-      url: "https://commons.wikimedia.org/wiki/File:Push-up.jpg"
-    },
-    "Row / Back Pull": {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Barbell%20row.jpg?width=900",
-      credit: "Barbell row.jpg",
-      url: "https://commons.wikimedia.org/wiki/File:Barbell_row.jpg"
-    },
-    Squat: {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Squats.svg?width=900",
-      credit: "Squats.svg",
-      url: "https://commons.wikimedia.org/wiki/File:Squats.svg"
-    },
-    "Lunge / Step-up": {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Airman%20performing%20lunge.jpg?width=900",
-      credit: "Airman performing lunge.jpg",
-      url: "https://commons.wikimedia.org/wiki/File:Airman_performing_lunge.jpg"
-    },
-    "Hip Hinge / Glutes": {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/DumbbellDeadlift.JPG?width=900",
-      credit: "DumbbellDeadlift.JPG",
-      url: "https://commons.wikimedia.org/wiki/File:DumbbellDeadlift.JPG"
-    },
-    "Overhead / Shoulder": {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Dumbbell-shoulder-press-1.png?width=900",
-      credit: "Dumbbell-shoulder-press-1.png",
-      url: "https://commons.wikimedia.org/wiki/File:Dumbbell-shoulder-press-1.png"
-    },
-    Arms: {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Dumbbell-Bicep-Curls.jpg?width=900",
-      credit: "Dumbbell-Bicep-Curls.jpg",
-      url: "https://commons.wikimedia.org/wiki/File:Dumbbell-Bicep-Curls.jpg"
-    },
-    "Core Brace": {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Modifiedsideplank.jpg?width=900",
-      credit: "Modifiedsideplank.jpg",
-      url: "https://commons.wikimedia.org/wiki/File:Modifiedsideplank.jpg"
-    },
-    Cardio: {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Vitruvian%20jumping%20jacks.gif?width=900",
-      credit: "Vitruvian jumping jacks.gif",
-      url: "https://commons.wikimedia.org/wiki/File:Vitruvian_jumping_jacks.gif"
-    },
-    Mobility: {
-      src: "https://commons.wikimedia.org/wiki/Special:FilePath/Bridge%20(exercise)%20-%20USDAgov.jpg?width=900",
-      credit: "Bridge (exercise) - USDAgov.jpg",
-      url: "https://commons.wikimedia.org/wiki/File:Bridge_(exercise)_-_USDAgov.jpg"
-    }
-  }[pattern];
-
-  if (!media) return "";
+  const media = forgeFitExerciseMedia(move);
   return `
     <figure class="posture-photo-wrap">
-      <img class="posture-photo" src="${media.src}" alt="${pattern} posture reference for ${move.name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('.posture-photo-wrap').classList.add('image-failed'); this.remove();" />
+      <img class="posture-photo" src="${media.src}" alt="${move.name} posture reference" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('.posture-photo-wrap').classList.add('image-failed'); this.remove();" />
       <figcaption>
-        <span>${pattern}</span>
-        <a href="${media.url}" target="_blank" rel="noopener noreferrer">${media.credit}</a>
+        <span>${media.credit}</span>
+        <a href="${media.url}" target="_blank" rel="noopener noreferrer">Free Exercise DB</a>
       </figcaption>
     </figure>
   `;
@@ -230,11 +154,9 @@ function forgeFitPostureMedia(move) {
 function exerciseVisual(move) {
   const focus = focusMuscles(move.part);
   const cues = postureCues[move.part] || postureCues.Core;
-  const accent = move.part === "Legs" ? "#f2c14e" : move.part === "Back" ? "#0d7c72" : move.part === "Core" ? "#6f63ff" : "#ff5a3d";
   return `
     <div class="exercise-visual" aria-label="Posture guide for ${move.name}">
       ${forgeFitPostureMedia(move)}
-      ${forgeFitPoseSvg(move, accent)}
       <div class="focus-row">${focus.map((item) => `<span>${item}</span>`).join("")}</div>
       <ul>${cues.map((cue) => `<li>${cue}</li>`).join("")}</ul>
     </div>
