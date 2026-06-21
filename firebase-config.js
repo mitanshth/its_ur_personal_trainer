@@ -1,0 +1,1 @@
+window.FORGEFIT_FIREBASE = { enabled: false };
