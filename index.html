@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#03040b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="ShadowSystem" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Shadow System - Hunter Awakening</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="firebase-config.js"></script>
+  </head>
+  <body>
+    <section class="onboarding" id="onboarding" aria-label="First visit setup">
+      <div class="onboarding-card">
+        <div class="onboarding-head">
+          <div class="brand-mark" aria-hidden="true">S</div>
+          <div>
+            <p class="eyebrow">Awakening Setup</p>
+            <h1>Build your Hunter Profile</h1>
+          </div>
+        </div>
+        <form class="onboarding-form" id="onboardingForm">
+          <label>
+            Hunter Code Name
+            <input id="setupName" type="text" autocomplete="name" placeholder="Name" required />
+          </label>
+          <label>
+            Hunter Login Email
+            <input id="setupEmail" type="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Awakening Registry Photo
+            <input id="setupPhoto" type="file" accept="image/*" />
+          </label>
+          <label>
+            Age
+            <input id="setupAge" type="number" min="13" max="90" value="25" required />
+          </label>
+          <label>
+            Gender Group
+            <select id="setupGender">
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>
+            Height
+            <input id="setupHeight" type="number" min="120" max="230" value="170" placeholder="cm" required />
+          </label>
+          <label>
+            Current Weight
+            <input id="setupCurrentWeight" type="number" min="25" max="300" step="0.1" value="75" required />
+          </label>
+          <label>
+            Target Weight
+            <input id="setupTargetWeight" type="number" min="25" max="300" step="0.1" value="70" required />
+          </label>
+          <fieldset class="choice-group wide" id="setupGoalGroup">
+            <legend>Awakening Objectives</legend>
+            <label><input type="checkbox" name="setupGoals" value="fat-loss" checked /> Monarch Shred (Fat Loss)</label>
+            <label><input type="checkbox" name="setupGoals" value="muscle" /> Shadow Muscle (Build Muscle)</label>
+            <label><input type="checkbox" name="setupGoals" value="strength" /> Overload Strength</label>
+            <label><input type="checkbox" name="setupGoals" value="endurance" /> Hunter Stamina</label>
+            <label><input type="checkbox" name="setupGoals" value="discipline" /> Iron Discipline</label>
+          </fieldset>
+          <label>
+            Combat Experience
+            <select id="setupExperience">
+              <option value="beginner">E-Rank (Beginner)</option>
+              <option value="intermediate">C-Rank (Intermediate)</option>
+              <option value="advanced">S-Rank (Advanced)</option>
+            </select>
+          </label>
+          <label>
+            Raid Gates Per Week
+            <input id="setupDaysPerWeek" type="number" min="2" max="6" step="1" value="4" required />
+          </label>
+          <fieldset class="choice-group wide" id="setupEquipmentGroup">
+            <legend>Available Armaments</legend>
+            <label><input type="checkbox" name="setupEquipment" value="bodyweight" checked /> Pure Bodyweight</label>
+            <label><input type="checkbox" name="setupEquipment" value="dumbbells" /> Hand Dumbbells</label>
+            <label><input type="checkbox" name="setupEquipment" value="gym" /> Full Guild Gym</label>
+            <label><input type="checkbox" name="setupEquipment" value="bands" /> Mana Bands (Resistance)</label>
+          </fieldset>
+          <label>
+            Daily Activity Tier
+            <select id="setupActivityLevel">
+              <option value="low">Subterranean (Mostly sitting)</option>
+              <option value="moderate">Raid Stance (Moderately active)</option>
+              <option value="high">Monarch Stance (Very active)</option>
+            </select>
+          </label>
+          <label>
+            Nutrient Alignment
+            <select id="setupDiet">
+              <option value="balanced">Balanced Fuel</option>
+              <option value="vegetarian">Herbaceous Warrior</option>
+              <option value="vegan">Pure Ethereal (Vegan)</option>
+              <option value="high-protein">High Protein Catalyst</option>
+              <option value="low-carb">Keto/Low Carb Overdrive</option>
+            </select>
+          </label>
+          <label>
+            Food Culture Zone
+            <select id="setupFoodCulture">
+              <option value="indian">Indian</option>
+              <option value="mediterranean">Mediterranean</option>
+              <option value="east-asian">East Asian</option>
+              <option value="mexican">Mexican</option>
+              <option value="middle-eastern">Middle Eastern</option>
+              <option value="western">Western</option>
+            </select>
+          </label>
+          <label class="wide">
+            Mana Restrictions / Injuries
+            <input id="setupInjuries" type="text" placeholder="Knee pain, back pain, none" />
+          </label>
+          <label class="wide">
+            Allergies / Toxins to Avoid
+            <input id="setupAvoidFoods" type="text" placeholder="Eggs, dairy, peanuts, none" />
+          </label>
+          <button class="primary-button wide" type="submit">AWAKEN THE SYSTEM</button>
+        </form>
+      </div>
+    </section>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="App navigation">
+        <div class="brand">
+          <div class="profile-photo" id="profilePhoto" aria-hidden="true">S</div>
+          <div>
+            <h1>Shadow System</h1>
+            <p id="profileCaption">Hunter Status Console</p>
+          </div>
+        </div>
+        <nav class="nav-tabs" aria-label="Sections">
+          <button class="tab active" data-view="dashboard" type="button">Status Window</button>
+          <button class="tab" data-view="workout" type="button">Daily Quests</button>
+          <button class="tab" data-view="homeWorkout" type="button">Instance Dungeon</button>
+          <button class="tab" data-view="nutrition" type="button">Mana Fuel</button>
+          <button class="tab" data-view="progress" type="button">Level Up Tracker</button>
+          <button class="tab" data-view="settings" type="button">System Settings</button>
+        </nav>
+        <div class="streak-panel">
+          <span class="label">Awakened Streak</span>
+          <strong id="streakDays">0 days</strong>
+          <span id="streakHint">Clear today's Quest to keep your rank.</span>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow" id="todayLabel">Today</p>
+            <h2 id="dailyHeadline">Do not falter. The System is watching.</h2>
+          </div>
+          <div class="topbar-actions">
+            <button class="secondary-button install-button" id="installButton" type="button" hidden>Install System Console</button>
+            <button class="icon-button" id="notifyButton" type="button" title="Enable daily alerts" aria-label="Enable daily alerts">
+              <span aria-hidden="true">!</span>
+            </button>
+            <button class="primary-button" id="completeWorkoutButton" type="button">Complete Quest</button>
+          </div>
+        </section>
+
+        <!-- DASHBOARD VIEW -->
+        <section class="view active-view" id="dashboard">
+          <div class="hero-panel">
+            <div class="hero-copy">
+              <span class="status-pill" id="coachMode">MONARCH INTERFACE ACTIVE</span>
+              <h3 id="coachMessage">Analyzing your hunter potential...</h3>
+              <p id="coachDetail">Conquer the instance gates, scale your core combat values, track your recovery, and raise your hunter evaluation score.</p>
+              <div class="hero-actions">
+                <button class="primary-button" id="generatePlanButton" type="button">Enter Gate</button>
+                <button class="secondary-button" data-jump="settings" type="button">Modify Status</button>
+              </div>
+            </div>
+            <div class="readiness-card">
+              <span class="label">Mana Reserves</span>
+              <div class="score-ring">
+                <span id="readinessScore">78</span>
+              </div>
+              <p id="readinessText">Balanced energy output recommended.</p>
+            </div>
+          </div>
+
+          <!-- INTEGRATED SOLO LEVELING AI CHAT COMMAND CENTER -->
+          <section class="panel system-ai-panel wide" style="border: 1px solid var(--accent-2); background: rgba(3, 4, 11, 0.95); margin-top: 8px;">
+            <div class="panel-head">
+              <h3 style="color: var(--accent-2); display: flex; align-items: center; gap: 8px;">
+                <span>[SYSTEM AI ASSISTANT]</span> Command Center
+              </h3>
+              <span class="status-pill urgent" style="background: rgba(0, 212, 255, 0.1); border-color: var(--accent-2); color: var(--accent-2);">MONARCH INTERFACE ONLINE</span>
+            </div>
+            
+            <div id="systemAiChatBox" style="height: 260px; overflow-y: auto; background: #020205; border: 1px solid var(--line); border-radius: 6px; padding: 14px; margin-bottom: 12px; font-family: monospace; display: flex; flex-direction: column; gap: 8px;">
+              <div style="color: var(--accent-2);"><span style="font-weight: bold;">[SYSTEM]:</span> Welcome, Hunter. The System AI interface is active. Present your inquiries regarding workout forms, customized diet matrices, debuff recovery protocols, or general fitness hurdles. Speak, and your parameters will be optimized.</div>
+            </div>
+
+            <form id="systemAiChatForm" style="display: flex; gap: 10px; margin: 0; padding: 0;">
+              <input id="systemAiChatInput" type="text" placeholder="Inquire about form, chest routines, high-protein fuels, or joint debuffs..." style="flex: 1; background: #060916; border-color: var(--line);" required />
+              <button class="primary-button" type="submit" style="min-height: 46px; padding: 0 24px;">EXECUTE</button>
+            </form>
+          </section>
+
+          <div class="metric-grid">
+            <article class="metric">
+              <span class="label">Gate Clearances</span>
+              <strong id="weeklyWorkouts">0 / 4</strong>
+              <meter id="weeklyMeter" min="0" max="4" value="0"></meter>
+            </article>
+            <article class="metric">
+              <span class="label">Discipline Synergy</span>
+              <strong id="disciplineScore">0%</strong>
+              <meter id="disciplineMeter" min="0" max="100" value="0"></meter>
+            </article>
+            <article class="metric">
+              <span class="label">Awakening Progress</span>
+              <strong id="goalProgress">0%</strong>
+              <meter id="goalMeter" min="0" max="100" value="0"></meter>
+            </article>
+            <article class="metric">
+              <span class="label">Daily Amino Build</span>
+              <strong id="proteinTarget">120g</strong>
+              <meter id="proteinMeter" min="0" max="200" value="120"></meter>
+            </article>
+          </div>
+
+          <div class="split-grid">
+            <section class="panel">
+              <div class="panel-head">
+                <h3>Today&apos;s Dungeon Gate</h3>
+                <button class="small-button" id="swapWorkoutButton" type="button">Reroll Gate</button>
+              </div>
+              <div id="todayWorkout" class="workout-block"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-head">
+                <h3>System Evaluation Logs</h3>
+              </div>
+              <ul class="coach-list" id="coachNotes"></ul>
+            </section>
+          </div>
+
+          <section class="panel checkin-panel">
+            <div class="panel-head">
+              <h3>Vitals Check-in</h3>
+              <span class="status-pill dark" id="checkinStatus">Awaiting Log</span>
+            </div>
+            <form class="checkin-form" id="quickCheckinForm">
+              <label>
+                Hibernation / Sleep
+                <input id="quickSleep" type="number" min="0" max="14" step="0.5" value="7" />
+              </label>
+              <label>
+                Elixir / Water (Liters)
+                <input id="quickWater" type="number" min="0" max="8" step="0.5" value="2" />
+              </label>
+              <label>
+                Fatigue / Soreness Tiers
+                <input id="quickSoreness" type="range" min="1" max="10" value="4" />
+              </label>
+              <label>
+                Shadow Steps Count
+                <input id="quickSteps" type="number" min="0" max="60000" step="500" value="5000" />
+              </label>
+              <button class="primary-button" type="submit">Commit Vitals</button>
+            </form>
+          </section>
+        </section>
+
+        <!-- WORKOUT VIEW -->
+        <section class="view" id="workout">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Dungeon Matrix</p>
+              <h2>Weekly Quest Logs</h2>
+            </div>
+            <button class="primary-button" id="refreshPlanButton" type="button">Reset All Gates</button>
+          </div>
+          <div class="plan-grid" id="weeklyPlan"></div>
+        </section>
+
+        <!-- HOME WORKOUT VIEW -->
+        <section class="view" id="homeWorkout">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Isolated Instance Rooms</p>
+              <h2>Zero Equipment Raids</h2>
+            </div>
+            <button class="primary-button" id="refreshHomeWorkoutButton" type="button">Deploy New Instanced Room</button>
+          </div>
+          <div class="split-grid">
+            <section class="panel">
+              <div class="panel-head">
+                <h3>At-Home Quests</h3>
+              </div>
+              <div class="home-workout-grid" id="homeWorkoutGrid"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-head">
+                <h3>Form Projection Templates</h3>
+              </div>
+              <div class="video-grid" id="tutorialVideoGrid"></div>
+            </section>
+          </div>
+        </section>
+
+        <!-- NUTRITION VIEW -->
+        <section class="view" id="nutrition">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Alchemical Formulae</p>
+              <h2>Mana Fuel & Recovery Provisioning</h2>
+            </div>
+            <button class="secondary-button" id="newRecipeButton" type="button">Cycle Alchemy Recipes</button>
+          </div>
+          <div class="split-grid">
+            <section class="panel">
+              <h3>Macronutrient Targets</h3>
+              <div class="nutrition-targets" id="nutritionTargets"></div>
+            </section>
+            <section class="panel">
+              <h3>System Dietary Proclamations</h3>
+              <ul class="coach-list" id="nutritionTips"></ul>
+            </section>
+          </div>
+          <div class="recipe-grid" id="recipeGrid"></div>
+          <section class="panel">
+            <div class="panel-head">
+              <h3>7-Day High-Amino Matrix Plan</h3>
+              <span class="status-pill dark" id="mealPlanTarget">Target Allocation</span>
+            </div>
+            <div class="meal-plan-grid" id="mealPlanGrid"></div>
+          </section>
+        </section>
+
+        <!-- PROGRESS VIEW -->
+        <section class="view" id="progress">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Stat Evolution Analyzer</p>
+              <h2>Track Parameters & Level Up</h2>
+            </div>
+          </div>
+          <form class="log-form" id="progressForm">
+            <label>
+              Mass Weight (kg)
+              <input id="logWeight" type="number" min="25" max="300" step="0.1" placeholder="kg" />
+            </label>
+            <label>
+              Combat Effort Tier
+              <input id="logEffort" type="range" min="1" max="10" value="7" />
+              <span id="effortValue">7 / 10</span>
+            </label>
+            <label>
+              Consumed Protein Catalyst
+              <input id="logProtein" type="number" min="0" max="350" step="1" placeholder="grams" />
+            </label>
+            <label>
+              Mental / Mood Paradigm
+              <select id="logMood">
+                <option>Focused</option>
+                <option>Energetic</option>
+                <option>Tired</option>
+                <option>Stressed</option>
+                <option>Unstoppable</option>
+              </select>
+            </label>
+            <label>
+              Sleep Cycles
+              <input id="logSleep" type="number" min="0" max="14" step="0.5" placeholder="hours" />
+            </label>
+            <label>
+              Water Volume
+              <input id="logWater" type="number" min="0" max="8" step="0.5" placeholder="liters" />
+            </label>
+            <button class="primary-button" type="submit">Commit Stat Entry</button>
+          </form>
+          <div class="split-grid">
+            <section class="panel">
+              <h3>Weight Trajectory Curve</h3>
+              <canvas id="weightChart" width="640" height="280" aria-label="Weight trend chart"></canvas>
+            </section>
+            <section class="panel">
+              <h3>Recent Evaluation Snapshots</h3>
+              <div id="logList" class="log-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section class="view" id="settings">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">System Deep Matrix</p>
+              <h2>Calibrate Core Directives</h2>
+            </div>
+          </div>
+          <form class="settings-grid" id="settingsForm">
+            <label>
+              Hunter Code Name
+              <input id="name" type="text" placeholder="Name" />
+            </label>
+            <label>
+              System Credentials Email
+              <input id="email" type="email" placeholder="you@example.com" />
+            </label>
+            <label class="wide">
+              Awakening Registry Photo
+              <input id="photoInput" type="file" accept="image/*" />
+            </label>
+            <label>
+              Age Chronology
+              <input id="age" type="number" min="13" max="90" value="25" />
+            </label>
+            <label>
+              Gender Classification
+              <select id="gender">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label>
+              Height Paradigm
+              <input id="height" type="number" min="120" max="230" value="170" />
+            </label>
+            <fieldset class="choice-group wide" id="goalGroup">
+              <legend>Awakening Objectives</legend>
+              <label><input type="checkbox" name="goals" value="fat-loss" /> Monarch Shred (Fat Loss)</label>
+              <label><input type="checkbox" name="goals" value="muscle" /> Shadow Muscle (Build Muscle)</label>
+              <label><input type="checkbox" name="goals" value="strength" /> Overload Strength</label>
+              <label><input type="checkbox" name="goals" value="endurance" /> Hunter Stamina</label>
+              <label><input type="checkbox" name="goals" value="discipline" /> Iron Discipline</label>
+            </fieldset>
+            <label>
+              Combat Class Rank
+              <select id="experience">
+                <option value="beginner">E-Rank (Beginner)</option>
+                <option value="intermediate">C-Rank (Intermediate)</option>
+                <option value="advanced">S-Rank (Advanced)</option>
+              </select>
+            </label>
+            <label>
+              Raid Gates Per Week
+              <input id="daysPerWeek" type="number" min="2" max="6" step="1" value="4" />
+            </label>
+            <label>
+              Raid Horizon Length
+              <select id="sessionLength">
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">60 minutes</option>
+              </select>
+            </label>
+            <fieldset class="choice-group wide" id="equipmentGroup">
+              <legend>Available Armaments</legend>
+              <label><input type="checkbox" name="equipment" value="bodyweight" /> Pure Bodyweight</label>
+              <label><input type="checkbox" name="equipment" value="dumbbells" /> Hand Dumbbells</label>
+              <label><input type="checkbox" name="equipment" value="gym" /> Full Guild Gym</label>
+              <label><input type="checkbox" name="equipment" value="bands" /> Mana Bands (Resistance)</label>
+            </fieldset>
+            <label>
+              Nutrient Alignment
+              <select id="diet">
+                <option value="balanced">Balanced Fuel</option>
+                <option value="vegetarian">Herbaceous Warrior</option>
+                <option value="vegan">Pure Ethereal</option>
+                <option value="high-protein">High Protein Catalyst</option>
+                <option value="low-carb">Keto/Low Carb Overdrive</option>
+              </select>
+            </label>
+            <label>
+              Food Culture Zone
+              <select id="foodCulture">
+                <option value="indian">Indian</option>
+                <option value="mediterranean">Mediterranean</option>
+                <option value="east-asian">East Asian</option>
+                <option value="mexican">Mexican</option>
+                <option value="middle-eastern">Middle Eastern</option>
+                <option value="western">Western</option>
+              </select>
+            </label>
+            <label>
+              Daily Activity Tier
+              <select id="activityLevel">
+                <option value="low">Subterranean</option>
+                <option value="moderate">Raid Stance</option>
+                <option value="high">Monarch Stance</option>
+              </select>
+            </label>
+            <label>
+              Current Mass (kg)
+              <input id="currentWeight" type="number" min="25" max="300" step="0.1" value="75" />
+            </label>
+            <label>
+              Target Threshold (kg)
+              <input id="targetWeight" type="number" min="25" max="300" step="0.1" value="70" />
+            </label>
+            <label>
+              System Alert Clock time
+              <input id="notificationTime" type="time" value="07:00" />
+            </label>
+            <section class="push-panel wide" aria-label="Push notification setup">
+              <div>
+                <p class="eyebrow">Telepathic Relays</p>
+                <h3>Firebase & Capacitor Sync</h3>
+                <p id="pushStatus">Engage node relay button after attaching Firebase parameters.</p>
+              </div>
+              <label>
+                Unique Relaying Device Token
+                <textarea id="pushToken" readonly placeholder="Token payload manifests upon system authorization"></textarea>
+              </label>
+            </section>
+            <label class="wide">
+              Interface Persona Modality
+              <select id="motivationStyle">
+                <option value="direct">The Architect (Direct coach)</option>
+                <option value="calm">Monarch Aura (Calm and steady)</option>
+                <option value="competitive">Shadow Extraction (Competitive push)</option>
+              </select>
+            </label>
+            <label class="wide">
+              Mana Path Disruption (Injuries)
+              <input id="injuries" type="text" placeholder="Knee pain, back pain, none" />
+            </label>
+            <label class="wide">
+              Chemical/Dietary Repellents
+              <input id="avoidFoods" type="text" placeholder="Eggs, dairy, peanuts, none" />
+            </label>
+            <section class="data-vault wide" aria-label="Data vault">
+              <div>
+                <p class="eyebrow">Cryptographic Vault</p>
+                <h3>Defend Your Evolution Benchmarks</h3>
+                <p>All core logs and level parameters are safely written into localized IndexedDB memory buffers. Download physical nodes for offsite archives.</p>
+              </div>
+              <div class="vault-actions">
+                <button class="secondary-button" id="backupDataButton" type="button">Extract Node File</button>
+                <button class="secondary-button" id="restoreDataButton" type="button">Inject Node Backup</button>
+                <input id="restoreDataInput" type="file" accept="application/json,.json" hidden />
+              </div>
+              <span id="vaultStatus">Vault localized.</span>
+            </section>
+            <button class="primary-button wide" type="submit">Commit Status Calibration</button>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button class="mobile-tab active" data-view="dashboard" type="button">Status</button>
+      <button class="mobile-tab" data-view="workout" type="button">Quests</button>
+      <button class="mobile-tab" data-view="homeWorkout" type="button">Dungeon</button>
+      <button class="mobile-tab" data-view="nutrition" type="button">Fuel</button>
+      <button class="mobile-tab" data-view="progress" type="button">Rank</button>
+      <button class="mobile-tab" data-view="settings" type="button">Config</button>
+    </nav>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="install-tip" id="installTip" hidden>
+      <strong>Initialize Standalone Unit</strong>
+      <span>Activate browser sidebar dropdown matrix and select 'Add to Home Screen'.</span>
+    </div>
+    <script src="app.js"></script>
+    <script src="posture-fix.js"></script>
+  </body>
+</html>

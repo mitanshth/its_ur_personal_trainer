@@ -1,0 +1,1 @@
+global.FORGEFIT_FIREBASE = { enabled: false };
